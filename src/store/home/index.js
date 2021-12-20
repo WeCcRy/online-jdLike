@@ -1,7 +1,8 @@
-import {requestCategoryList,requestListContainer} from "../../api";
+import {requestCategoryList,requestListContainer,requestFloorList} from "../../api";
 const state={
     categoryList:[],
-    listContainer:[]
+    listContainer:[],
+    listFloor:[]
 }
 const actions={
     async getCategory(context){
@@ -13,16 +14,26 @@ const actions={
     async getBanner(context){
         let result =await requestListContainer()
         if(result.code===200){
-            context.commit('ListContainer',result.data)
+            context.commit('LISTCONTAINER',result.data)
+        }
+    },
+    async getFloor(context){
+        let result =await requestFloorList()
+        if(result.code===200){
+            context.commit('FLOORLIST',result.data)
         }
     }
+
 }
 const mutations={
     CATEGORYLIST(state,categoryList){
         state.categoryList=categoryList
     },
-    ListContainer(state,listContainer){
+    LISTCONTAINER(state,listContainer){
         state.listContainer=listContainer
+    },
+    FLOORLIST(state,listFloor){
+        state.listFloor=listFloor
     }
 }
 const getters={}
