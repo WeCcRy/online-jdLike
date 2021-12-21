@@ -20,7 +20,7 @@
 
         <!--selector-->
         <SearchSelector />
-
+        <router-view></router-view>
         <!--details-->
         <div class="details clearfix">
           <div class="sui-navbar">
@@ -114,15 +114,50 @@
   import {mapGetters} from "vuex";
   export default {
     name: 'Search',
+    data(){
+      return {
+        searchParams: {
+          "category1Id": "",
+          "category2Id": "",
+          "category3Id": "",
+          "categoryName": "",
+          "keyword": "",
+          "order": "",
+          "pageNo": 1,
+          "pageSize": 5,
+          "props": [],
+          "trademark": ""
+        }
+      }
+    },
+    beforeMount() {
+      Object.assign(this.searchParams,this.$route.query,this.$route.params)
+    },
     mounted() {
-      this.$store.dispatch('getSearch',{})
+      this.getData()
     },
     components: {
       SearchSelector
     },
     computed:{
-      ...mapGetters(['goodsList','attrsList','trademarkList'])
-    }
+      ...mapGetters(['goodsList','attrsList','trademarkList']),
+    },
+    methods:{
+      getData(){
+        this.$store.dispatch('getSearch',this.searchParams)
+      }
+    },
+    watch: {
+      //监听路由的信息是否发生变化，如果发生变化，再次发起请求
+      $route() {
+        Object.assign(this.searchParams, this.$route.query, this.$route.params);
+        this.getData();
+        //分类名字与关键字不用清理：因为每一次路由发生变化的时候，都会给他赋予新的数据
+        this.searchParams.category1Id = undefined;
+        this.searchParams.category2Id = undefined;
+        this.searchParams.category3Id = undefined;
+      },
+    },
   }
 </script>
 
