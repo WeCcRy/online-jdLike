@@ -12,6 +12,9 @@ Vue.component(TypeNav.name,TypeNav)
 Vue.component(Carousel.name,Carousel)
 new Vue({
   render: h => h(App),
+  beforeMount() {
+    Vue.prototype.$bus = this;
+  },
   router,
   store
 }).$mount('#app')

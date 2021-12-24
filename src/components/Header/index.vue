@@ -48,9 +48,21 @@ export default {
       keyword:'',
     }
   },
+  mounted() {
+    this.$bus.$on('clearKeyword',()=>{
+      this.keyword=''
+    })
+  },
   methods:{
     search(){
-      this.$router.push({name:'search',params: {keyword:this.keyword||undefined},query: {keyword:this.keyword||undefined}})
+      if (this.$route.query) {
+        let loction = {
+          name: "search",
+          params: { keyword: this.keyword || undefined },
+        };
+        loction.query = this.$route.query;
+        this.$router.push(loction);
+      }
     }
   }
 }
