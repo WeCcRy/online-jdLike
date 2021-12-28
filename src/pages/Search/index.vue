@@ -26,23 +26,11 @@
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <li :class="{active:isFirst}" @click="changeOrder('1')">
+                  <a>综合 <span v-show="isFirst" class="iconfont" :class="{'icon-sort-down':isDesc,'icon-sort-up':isAsc}"></span></a>
                 </li>
-                <li>
-                  <a href="#">销量</a>
-                </li>
-                <li>
-                  <a href="#">新品</a>
-                </li>
-                <li>
-                  <a href="#">评价</a>
-                </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
+                <li :class="{active:isSecond}" @click="changeOrder('2')">
+                  <a>价格 <span v-show="isSecond" class="iconfont" :class="{'icon-sort-down':isDesc,'icon-sort-up':isAsc}"></span></a>
                 </li>
               </ul>
             </div>
@@ -52,7 +40,9 @@
               <li class="yui3-u-1-5" v-for="good in goodsList" :key="good.id">
                 <div class="list-wrap">
                   <div class="p-img">
-                    <a href="item.html" target="_blank"><img :src="good.defaultImg" /></a>
+                    <router-link :to="`/detail/${good.id}`">
+                      <img :src="good.defaultImg" />
+                    </router-link>
                   </div>
                   <div class="price">
                     <strong>
@@ -74,35 +64,7 @@
               </li>
             </ul>
           </div>
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <pagination :pageNo="searchParams.pageNo" :pageSize="searchParams.pageSize" :total="total" :continues="5" @getPage="getPage"></pagination>
         </div>
       </div>
     </div>
@@ -111,7 +73,7 @@
 
 <script>
   import SearchSelector from './SearchSelector/SearchSelector'
-  import {mapGetters} from "vuex";
+  import {mapGetters, mapState} from "vuex";
   export default {
     name: 'Search',
     data(){
@@ -122,7 +84,7 @@
           "category3Id": "",
           "categoryName": "",
           "keyword": "",
-          "order": "",
+          "order": "1:desc",
           "pageNo": 1,
           "pageSize": 5,
           "props": [],
@@ -141,6 +103,22 @@
     },
     computed:{
       ...mapGetters(['goodsList','attrsList','trademarkList']),
+      ...mapState({
+        total: state => state.search.searchList.total
+      }),
+      isFirst(){
+        return this.searchParams.order.indexOf('1')!=-1
+
+      },
+      isSecond(){
+        return this.searchParams.order.indexOf('2')!=-1
+      },
+      isAsc(){
+        return this.searchParams.order.indexOf('asc')!=-1
+      },
+      isDesc(){
+        return this.searchParams.order.indexOf('desc')!=-1
+      }
     },
     methods:{
       getData(){
@@ -156,6 +134,10 @@
           this.searchParams.props.push(props);
           this.getData()
         }
+      },
+      getPage(page){
+        this.searchParams.pageNo=page
+        this.getData()
       },
       removeCategoryName(){
         this.searchParams.categoryName = undefined;
@@ -179,6 +161,19 @@
       },
       removeAttr(index){
         this.searchParams.props.splice(index,1)
+        this.getData()
+      },
+      changeOrder(flag){
+        let originWay=this.searchParams.order.split(':')[0]
+        let originSort=this.searchParams.order.split(':')[1]
+        let newOrder=''
+        console.log(originWay,originSort)
+        if(flag==originWay){
+          newOrder=`${flag}:${originSort=='desc'?'asc':'desc'}`
+        }else{
+          newOrder=`${flag}:desc`
+        }
+        this.searchParams.order=newOrder
         this.getData()
       }
     },
@@ -493,66 +488,6 @@
   height: 66px;
   overflow: hidden;
   float: right;
-}
-.main .py-container .details .page .sui-pagination {
-  margin: 18px 0;
-}
-.main .py-container .details .page .sui-pagination ul {
-  margin-left: 0;
-  margin-bottom: 0;
-  vertical-align: middle;
-  width: 490px;
-  float: left;
-}
-.main .py-container .details .page .sui-pagination ul li {
-  line-height: 18px;
-  display: inline-block;
-}
-.main .py-container .details .page .sui-pagination ul li a {
-  position: relative;
-  float: left;
-  line-height: 18px;
-  text-decoration: none;
-  background-color: #fff;
-  border: 1px solid #e0e9ee;
-  margin-left: -1px;
-  font-size: 14px;
-  padding: 9px 18px;
-  color: #333;
-}
-.main .py-container .details .page .sui-pagination ul li.active a {
-  background-color: #fff;
-  color: #e1251b;
-  border-color: #fff;
-  cursor: default;
-}
-.main .py-container .details .page .sui-pagination ul li.prev a {
-  background-color: #fafafa;
-}
-.main .py-container .details .page .sui-pagination ul li.disabled a {
-  color: #999;
-  cursor: default;
-}
-.main .py-container .details .page .sui-pagination ul li.dotted span {
-  margin-left: -1px;
-  position: relative;
-  float: left;
-  line-height: 18px;
-  text-decoration: none;
-  background-color: #fff;
-  font-size: 14px;
-  border: 0;
-  padding: 9px 18px;
-  color: #333;
-}
-.main .py-container .details .page .sui-pagination ul li.next a {
-  background-color: #fafafa;
-}
-.main .py-container .details .page .sui-pagination div {
-  color: #333;
-  font-size: 14px;
-  float: right;
-  width: 241px;
 }
 .main .py-container .hot-sale {
   margin-bottom: 5px;
