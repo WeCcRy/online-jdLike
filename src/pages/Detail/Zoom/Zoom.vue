@@ -15,7 +15,7 @@
     props:['imgList'],
     data(){
       return {
-        imgIndex:0
+        imgIndex:0,
       }
     },
     methods:{
@@ -39,11 +39,12 @@
         this.imgIndex=index
       })
     },
-    computed:{
-      imgUrl(){
-        return this.imgList[this.imgIndex].imgUrl||{}
+    computed: {
+      imgUrl() {
+        return this.imgList[this.imgIndex].imgUrl || {}
+
       }
-    }
+    },
   }
 </script>
 
@@ -87,7 +88,7 @@
       border: 1px solid #aaa;
       overflow: hidden;
       z-index: 998;
-      display: block;
+      display: none;
       background: white;
 
       img {

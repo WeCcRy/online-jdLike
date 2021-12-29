@@ -1,7 +1,7 @@
 <template>
   <div class="swiper-container">
     <div class="swiper-wrapper">
-      <div class="swiper-slide" v-for="(skuImage,index) in imgList" :key="index" >
+      <div class="swiper-slide" v-for="(skuImage,index) in imgLists" :key="index" >
         <img :src="skuImage.imgUrl"  @mouseover="mouseover(index)">
       </div>
     </div>
@@ -16,7 +16,7 @@
     name: "ImageList",
     data(){
       return {
-
+        imgLists:this.imgList
       }
     },
     props:['imgList'],
@@ -24,24 +24,35 @@
       mouseover(index){
         this.$bus.$emit('sendIndex',index)
       },
+      swiper(){
+        var mySwiper = new Swiper ('.swiper-container', {
+          slidesPerView : 4,
+          slidesPerGroup : 2,
+          // 如果需要前进后退按钮
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          }
+        })
+      }
     },
     watch:{
       list:{
         immediate:true,
         handler(){
           this.$nextTick(()=>{
-            var mySwiper = new Swiper ('.swiper-container', {
-              slidesPerView : 4,
-              slidesPerGroup : 2,
-              // 如果需要前进后退按钮
-              navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-              }
-            })
+            this.swiper()
           })
         }
-      }
+      },
+        imgList:{
+          handler(val){
+          this.imgLists=val
+            this.$nextTick(()=>{
+              this.swiper()
+            })
+          }
+        }
     }
   }
 </script>

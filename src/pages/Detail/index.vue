@@ -340,27 +340,24 @@
     },
 
     mounted() {
-      this.getDetail()
+        this.$store.dispatch('getDetail',this.$route.params.skuid)
     },
 
     computed:{
       ...mapGetters(['categoryView','skuInfo','spuSaleAttrList']),
       skuImageList(){
-        return this.skuInfo.skuImageList||[]
+        return this.skuInfo.skuImageList||['']
       },
     },
     methods:{
-      getDetail(){
-        this.$store.dispatch('getDetail',this.$route.params.skuid)
-      },
       changeActive(value,list){
-        console.log(value,list)
         list.forEach((item)=>{
           item.isChecked=0
         })
         value.isChecked=1
       }
-    }
+    },
+
   }
 </script>
 
