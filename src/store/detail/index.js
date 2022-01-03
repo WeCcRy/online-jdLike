@@ -1,11 +1,14 @@
-import {requsetDetail} from "../../api";
-
+import {requsetDetail,requestShopcart} from "../../api";
+import {getUUID} from'../../utils/getUUID'
 const state={
     goodDetail:{
-        categoryView:{},
-        skuInfo:{},
-        spuSaleAttrList:{}
-    }
+        data:{
+            categoryView:{},
+            skuInfo:{},
+            spuSaleAttrList:{}
+        }
+    },
+    uuid_token:getUUID()
 }
 const actions={
     async getDetail(context,skuid){
@@ -13,6 +16,9 @@ const actions={
         if(result.code==200){
             context.commit('GETDETAIL',result)
         }
+    },
+    async addShopcart(context,{skuid,skuNum}){
+        await requestShopcart(skuid,skuNum)
     }
 }
 const mutations={
