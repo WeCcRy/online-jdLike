@@ -65,18 +65,18 @@
               <div class="choosed"></div>
               <dl v-for="spuSaleAttr in spuSaleAttrList" :key="spuSaleAttr.id">
                 <dt class="title">{{ spuSaleAttr.saleAttrName }}</dt>
-                <dd :class="{active:spuSaleAttrValue.isChecked}" v-for="spuSaleAttrValue in spuSaleAttr.spuSaleAttrValueList" :key="spuSaleAttrValue.id" @click="changeActive(spuSaleAttrValue,spuSaleAttr.spuSaleAttrValueList)">
+                <dd :class="{active:spuSaleAttrValue.isChecked==1}" v-for="spuSaleAttrValue in spuSaleAttr.spuSaleAttrValueList" :key="spuSaleAttrValue.id" @click="changeActive(spuSaleAttrValue,spuSaleAttr.spuSaleAttrValueList)">
                   {{ spuSaleAttrValue.saleAttrValueName }}</dd>
               </dl>
             </div>
             <div class="cartWrap">
               <div class="controls">
-                <input autocomplete="off" class="itxt">
-                <a href="javascript:" class="plus">+</a>
-                <a href="javascript:" class="mins">-</a>
+                <input autocomplete="off" class="itxt" v-model.number="buyNum">
+                <a href="javascript:" class="plus" @click="buyNum++">+</a>
+                <a href="javascript:" class="mins" @click="buyNum>1 ?buyNum-- :buyNum=1">-</a>
               </div>
               <div class="add">
-                <a href="javascript:">加入购物车</a>
+                <a href="javascript:" @click="addShopcart">加入购物车</a>
               </div>
             </div>
           </div>
@@ -333,31 +333,65 @@
 
   export default {
     name: 'Detail',
-    
+
     components: {
       ImageList,
       Zoom
     },
 
     mounted() {
-        this.$store.dispatch('getDetail',this.$route.params.skuid)
+      this.getDetail()
     },
-
-    computed:{
-      ...mapGetters(['categoryView','skuInfo','spuSaleAttrList']),
-      skuImageList(){
-        return this.skuInfo.skuImageList||['']
-      },
-    },
-    methods:{
-      changeActive(value,list){
-        list.forEach((item)=>{
-          item.isChecked=0
-        })
-        value.isChecked=1
+    data() {
+      return {
+        buyNum: 1
       }
     },
-
+    computed: {
+      ...mapGetters(['categoryView', 'skuInfo', 'spuSaleAttrList']),
+      skuImageList() {
+        return this.skuInfo.skuImageList || ['']
+      },
+    },
+    methods: {
+      getDetail() {
+        this.$store.dispatch('getDetail', this.$route.params.skuid)
+      },
+      changeActive(value, list) {
+        list.forEach((item) => {
+          item.isChecked = 0
+        })
+        value.isChecked = 1
+      },
+      async addShopcart(){
+        try{
+          await this.$store.dispatch('addShopcart',{skuid:this.$route.params.skuid,skuNum:this.buyNum})
+          //新建一个数组用于存放用户选择的产品参数
+          let spuSaleAttr=new Array()
+          //遍历数组查看用户选择的参数
+          this.spuSaleAttrList.forEach((item)=>{
+            for(let i of item.spuSaleAttrValueList){
+              if(i.isChecked==1){
+                spuSaleAttr.push({item:i})
+              }
+            }
+          })
+          //将数据存放在session中
+          sessionStorage.setItem('GETINFO',JSON.stringify(this.skuInfo))
+          sessionStorage.setItem('SPUSALEATTR',JSON.stringify(spuSaleAttr))
+          this.$router.push({name:'addcartsuccess',query:{buyNum:this.buyNum}})
+        }catch (error){
+          alert(error.message)
+        }
+      }
+    },
+    watch: {
+      buyNum() {
+        if (this.buyNum < 1) {
+          this.buyNum = 1
+        }
+      }
+    }
   }
 </script>
 

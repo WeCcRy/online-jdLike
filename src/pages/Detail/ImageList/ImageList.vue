@@ -1,7 +1,7 @@
 <template>
   <div class="swiper-container">
     <div class="swiper-wrapper">
-      <div class="swiper-slide" v-for="(skuImage,index) in imgLists" :key="index" >
+      <div class="swiper-slide" v-for="(skuImage,index) in imgList" :key="index" >
         <img :src="skuImage.imgUrl"  @mouseover="mouseover(index)">
       </div>
     </div>
@@ -41,18 +41,20 @@
         immediate:true,
         handler(){
           this.$nextTick(()=>{
+            //swiper实例化
             this.swiper()
           })
         }
       },
-        imgList:{
-          handler(val){
+      imgList:{
+        handler(val){
           this.imgLists=val
-            this.$nextTick(()=>{
-              this.swiper()
-            })
-          }
+          this.$nextTick(()=>{
+            //swiper实例化
+            this.swiper()
+          })
         }
+      }
     }
   }
 </script>

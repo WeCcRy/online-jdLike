@@ -16,6 +16,7 @@
     data(){
       return {
         imgIndex:0,
+        imgLists:this.imgList
       }
     },
     methods:{
@@ -39,10 +40,9 @@
         this.imgIndex=index
       })
     },
-    computed: {
-      imgUrl() {
-        return this.imgList[this.imgIndex].imgUrl || {}
-
+    computed:{
+      imgUrl(){
+        return this.imgList[this.imgIndex].imgUrl|| {}
       }
     },
   }
